@@ -6,6 +6,7 @@ import csv
 import io
 import json
 import os
+import threading
 import urllib.error
 import urllib.request
 import uuid
@@ -161,7 +162,7 @@ def seed_default_portfolio() -> None:
     sample_path = ROOT / "data" / "batch_examples" / "training_reference_sample.csv"
     if not sample_path.exists():
         return
-    rows = pd.read_csv(sample_path).fillna(0).to_dict(orient="records")
+    rows = pd.read_csv(sample_path).fillna(0).head(500).to_dict(orient="records")
     for application_row in rows:
         try:
             application = Application(**application_row)
@@ -188,7 +189,15 @@ def seed_default_portfolio() -> None:
 
 
 load_persisted_portfolio()
-seed_default_portfolio()
+
+
+def _seed_in_background() -> None:
+    """Seed demo portfolio in a background thread so the app can bind to the port immediately."""
+    seed_default_portfolio()
+
+
+if not portfolio:
+    threading.Thread(target=_seed_in_background, daemon=True).start()
 
 
 def portfolio_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
