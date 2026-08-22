@@ -1,0 +1,114 @@
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  filename: xgb_credit_data_clean.csv
+  sample_rows: null
+  random_state: 42
+  exclude_features:
+    - grade
+    - sub_grade
+    - int_rate
+
+business:
+  product: Unsecured consumer installment (Lending Club style)
+  objective: Origination PD for approve / refer / decline
+  population: Funded loans with known terminal outcome
+  risk_appetite: Moderate consumer unsecured
+  kpis:
+    - Holdout ROC-AUC >= 0.65
+    - Holdout KS >= 0.20
+    - PSI vs reference < 0.25
+    - Approval bad-rate within policy band
+
+target:
+  column: loan_default
+  positive_label: Charged Off
+  keep_statuses:
+    - Fully Paid
+    - Charged Off
+  default_definition: Charged Off (terminal bad)
+  good_definition: Fully Paid
+  observation_window: Application / issue month
+  performance_window: Through terminal status (fully paid or charged off)
+  delinquency_rule: Lending Club charged-off flag
+  reject_inference: Not applied (accepted population only)
+
+split:
+  test_size: 0.2
+  time_column: issue_d
+
+feature_selection:
+  max_features: 18
+  min_features: 15
+  min_iv: 0.02
+  corr_threshold: 0.8
+  n_fine_bins: 10
+  vif_threshold: 10.0
+
+models:
+  logistic_regression:
+    max_iter: 800
+    C: 1.0
+  random_forest:
+    n_estimators: 120
+    max_depth: 10
+    min_samples_leaf: 40
+    n_jobs: -1
+  xgboost:
+    n_estimators: 300
+    max_depth: 5
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_weight: 8
+    reg_lambda: 1.0
+
+calibration:
+  methods:
+    - platt
+    - isotonic
+  champion_method: isotonic
+
+quantification:
+  lgd_base: 0.55
+  lgd_stressed: 0.70
+  ead_factor: 1.0
+  ul_confidence: 0.999
+  unexpected_loss_multiplier: 1.65
+
+decision:
+  lgd: 0.55
+  approve_pd: 0.10
+  refer_pd: 0.22
+  min_fico_approve: 660
+  max_dti_approve: 36
+  hard_cut_fico: 580
+  hard_cut_dti: 50
+  score_offset: 600
+  score_factor: 50
+  pdo: 20
+  base_score: 600
+  base_odds: 50
+  max_limit: 40000
+  min_limit: 1000
+  pricing_spread_bps:
+    A: 150
+    B: 250
+    C: 400
+    D: 600
+    E: 900
+    F: 1200
+    G: 1600
+
+monitoring:
+  psi_warn: 0.10
+  psi_alert: 0.25
+  auc_drop_alert: 0.03
+  ks_drop_alert: 0.03
+  prediction_drift_alert: 0.10
+  default_rate_abs_alert: 0.03
+  shap_sample: 3000
+  monitoring_sample: 150000
+
+scorecard:
+  enabled: true

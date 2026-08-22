@@ -1,0 +1,24 @@
+{
+  "product": "Unsecured consumer installment (Lending Club style)",
+  "objective": "Origination PD for approve / refer / decline",
+  "population": "Funded loans with known terminal outcome",
+  "risk_appetite": "Moderate consumer unsecured",
+  "kpis": [
+    "Holdout ROC-AUC >= 0.65",
+    "Holdout KS >= 0.20",
+    "PSI vs reference < 0.25",
+    "Approval bad-rate within policy band"
+  ],
+  "default_definition": "Charged Off (terminal bad)",
+  "good_definition": "Fully Paid",
+  "observation_window": "Application / issue month",
+  "performance_window": "Through terminal status (fully paid or charged off)",
+  "reject_inference": "Not applied (accepted population only)",
+  "decision_strategy": {
+    "approve_pd": 0.1,
+    "refer_pd": 0.22,
+    "hard_cut_fico": 580,
+    "hard_cut_dti": 50
+  },
+  "fundamental_identity": "EL = PD \u00d7 LGD \u00d7 EAD"
+}

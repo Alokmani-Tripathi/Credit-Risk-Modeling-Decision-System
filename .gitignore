@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.git-nested-backup/
+.env
+.ipynb_checkpoints/
+data/raw/*.csv
+data/raw/*.zip
+data/processed/
+models/*.joblib
+models/*.pkl
+models/*.json
+reports/*.json
+.DS_Store
+Thumbs.db

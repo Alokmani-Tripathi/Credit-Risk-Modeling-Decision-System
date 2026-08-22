@@ -1,0 +1,9 @@
+{
+  "source": "lending_club:xgb_credit_data_clean.csv",
+  "champion": "xgboost",
+  "calibration": "isotonic",
+  "n_features": 16,
+  "oot_auc": 0.6905305829262162,
+  "monitoring_vintages": 27,
+  "alerts": 12
+}

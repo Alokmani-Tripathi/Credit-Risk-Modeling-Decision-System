@@ -1,0 +1,467 @@
+{
+  "train_target": {
+    "n": 1078479,
+    "default_rate": 0.19530004756699018,
+    "goods": 867852,
+    "bads": 210627,
+    "bad_good_odds": 4.120326453873435
+  },
+  "test_target": {
+    "n": 269620,
+    "default_rate": 0.2178362139307173,
+    "goods": 210887,
+    "bads": 58733,
+    "bad_good_odds": 3.5906049410042056
+  },
+  "missingness_train": [
+    {
+      "feature": "mths_since_recent_inq",
+      "missing_rate": 0.14145940718363548
+    },
+    {
+      "feature": "avg_cur_bal",
+      "missing_rate": 0.0651732671660737
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "missing_rate": 0.0651630676165229
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "missing_rate": 0.06516214038474555
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "missing_rate": 0.06516214038474555
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "missing_rate": 0.05510167560054484
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "missing_rate": 0.04638940582060476
+    },
+    {
+      "feature": "total_bc_limit",
+      "missing_rate": 0.04638940582060476
+    },
+    {
+      "feature": "mort_acc",
+      "missing_rate": 0.04638940582060476
+    },
+    {
+      "feature": "dti",
+      "missing_rate": 2.874418509771632e-05
+    },
+    {
+      "feature": "loan_to_income",
+      "missing_rate": 3.708927109382751e-06
+    },
+    {
+      "feature": "annual_inc",
+      "missing_rate": 3.708927109382751e-06
+    },
+    {
+      "feature": "fico_range_low",
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "term",
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "loan_amnt",
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "missing_rate": 0.0
+    }
+  ],
+  "outliers_train": [
+    {
+      "feature": "mths_since_recent_bc",
+      "outlier_rate_iqr": 0.08771148997801534,
+      "p01": 1.0,
+      "p99": 142.0
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "outlier_rate_iqr": 0.05831267924549296,
+      "p01": 0.0,
+      "p99": 44.0
+    },
+    {
+      "feature": "total_bc_limit",
+      "outlier_rate_iqr": 0.05736597560082301,
+      "p01": 0.0,
+      "p99": 100945.20000000019
+    },
+    {
+      "feature": "avg_cur_bal",
+      "outlier_rate_iqr": 0.049358401971665654,
+      "p01": 506.0,
+      "p99": 72047.0
+    },
+    {
+      "feature": "annual_inc",
+      "outlier_rate_iqr": 0.04640424152904229,
+      "p01": 18500.0,
+      "p99": 250000.0
+    },
+    {
+      "feature": "fico_range_low",
+      "outlier_rate_iqr": 0.03030378894721177,
+      "p01": 660.0,
+      "p99": 795.0
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "outlier_rate_iqr": 0.02701767952829865,
+      "p01": 31.0,
+      "p99": 472.0
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "outlier_rate_iqr": 0.02668202162489951,
+      "p01": 1.0,
+      "p99": 17.0
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "outlier_rate_iqr": 0.01978898059211167,
+      "p01": 0.0,
+      "p99": 14.0
+    },
+    {
+      "feature": "mort_acc",
+      "outlier_rate_iqr": 0.01433778497309637,
+      "p01": 0.0,
+      "p99": 8.0
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "outlier_rate_iqr": 0.011219504505882822,
+      "p01": 0.0,
+      "p99": 23.0
+    },
+    {
+      "feature": "dti",
+      "outlier_rate_iqr": 0.001632855159905756,
+      "p01": 1.93,
+      "p99": 37.9
+    },
+    {
+      "feature": "loan_amnt",
+      "outlier_rate_iqr": 0.001470589598870261,
+      "p01": 1750.0,
+      "p99": 35000.0
+    },
+    {
+      "feature": "loan_to_income",
+      "outlier_rate_iqr": 0.0010737343981663064,
+      "p01": 0.027692307692307693,
+      "p99": 0.48374713622291027
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "outlier_rate_iqr": 0.0,
+      "p01": 0.0,
+      "p99": 1.0
+    }
+  ],
+  "leakage_flags": [],
+  "psi_train_vs_test": [
+    {
+      "feature": "term",
+      "psi_train_vs_test": 7.396632894022233e-07,
+      "status": "stable"
+    },
+    {
+      "feature": "fico_range_low",
+      "psi_train_vs_test": 0.028427979725809783,
+      "status": "stable"
+    },
+    {
+      "feature": "loan_to_income",
+      "psi_train_vs_test": 0.03885511191796375,
+      "status": "stable"
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "psi_train_vs_test": 0.019366935227748752,
+      "status": "stable"
+    },
+    {
+      "feature": "dti",
+      "psi_train_vs_test": 0.004357279792690224,
+      "status": "stable"
+    },
+    {
+      "feature": "avg_cur_bal",
+      "psi_train_vs_test": 0.006555721727565119,
+      "status": "stable"
+    },
+    {
+      "feature": "total_bc_limit",
+      "psi_train_vs_test": 0.01874486152804597,
+      "status": "stable"
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "psi_train_vs_test": 0.0024861754761464146,
+      "status": "stable"
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "psi_train_vs_test": 0.0020545075303960584,
+      "status": "stable"
+    },
+    {
+      "feature": "mort_acc",
+      "psi_train_vs_test": 0.015183229756357615,
+      "status": "stable"
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "psi_train_vs_test": 0.03767324512692359,
+      "status": "stable"
+    },
+    {
+      "feature": "loan_amnt",
+      "psi_train_vs_test": 0.03148517344164975,
+      "status": "stable"
+    },
+    {
+      "feature": "annual_inc",
+      "psi_train_vs_test": 0.006700422899470467,
+      "status": "stable"
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "psi_train_vs_test": 0.006507519899385512,
+      "status": "stable"
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "psi_train_vs_test": 0.03983876221800181,
+      "status": "stable"
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "psi_train_vs_test": 0.00025748027738520056,
+      "status": "stable"
+    }
+  ],
+  "describe_train": [
+    {
+      "feature": "term",
+      "count": 1078479.0,
+      "mean": 41.7822544527988,
+      "std": 10.263514894255874,
+      "min": 36.0,
+      "1%": 36.0,
+      "25%": 36.0,
+      "50%": 36.0,
+      "75%": 36.0,
+      "99%": 60.0,
+      "max": 60.0
+    },
+    {
+      "feature": "fico_range_low",
+      "count": 1078479.0,
+      "mean": 695.071257762089,
+      "std": 30.923555103960723,
+      "min": 610.0,
+      "1%": 660.0,
+      "25%": 670.0,
+      "50%": 690.0,
+      "75%": 710.0,
+      "99%": 795.0,
+      "max": 845.0
+    },
+    {
+      "feature": "loan_to_income",
+      "count": 1078475.0,
+      "mean": 0.6215597240876082,
+      "std": 82.09384699747655,
+      "min": 0.0003090094544280424,
+      "1%": 0.027692307692307693,
+      "25%": 0.1276595744680851,
+      "50%": 0.2,
+      "75%": 0.29304029304029305,
+      "99%": 0.48374713622291027,
+      "max": 24975.0
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "count": 1028449.0,
+      "mean": 4.597359713510344,
+      "std": 3.1219661010255826,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 2.0,
+      "50%": 4.0,
+      "75%": 6.0,
+      "99%": 14.0,
+      "max": 64.0
+    },
+    {
+      "feature": "dti",
+      "count": 1078448.0,
+      "mean": 18.155520581428124,
+      "std": 8.783061227349513,
+      "min": -1.0,
+      "1%": 1.93,
+      "25%": 11.85,
+      "50%": 17.62,
+      "75%": 23.99,
+      "99%": 37.9,
+      "max": 999.0
+    },
+    {
+      "feature": "avg_cur_bal",
+      "count": 1008191.0,
+      "mean": 13256.153378675272,
+      "std": 15979.715309902047,
+      "min": 0.0,
+      "1%": 506.0,
+      "25%": 3091.0,
+      "50%": 7279.0,
+      "75%": 18382.0,
+      "99%": 72047.0,
+      "max": 958084.0
+    },
+    {
+      "feature": "total_bc_limit",
+      "count": 1028449.0,
+      "mean": 21073.55371729663,
+      "std": 20999.605878089205,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 7500.0,
+      "50%": 14700.0,
+      "75%": 27400.0,
+      "99%": 100945.20000000019,
+      "max": 1105500.0
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "count": 1008203.0,
+      "mean": 7.95764543450079,
+      "std": 8.902483603443306,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 3.0,
+      "50%": 6.0,
+      "75%": 10.0,
+      "99%": 44.0,
+      "max": 289.0
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "count": 925918.0,
+      "mean": 6.759416060601478,
+      "std": 5.882910307899524,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 2.0,
+      "50%": 5.0,
+      "75%": 10.0,
+      "99%": 23.0,
+      "max": 25.0
+    },
+    {
+      "feature": "mort_acc",
+      "count": 1028449.0,
+      "mean": 1.7119759949205064,
+      "std": 2.0452574177890948,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 0.0,
+      "50%": 1.0,
+      "75%": 3.0,
+      "99%": 8.0,
+      "max": 51.0
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "count": 1008203.0,
+      "mean": 5.738082509177219,
+      "std": 3.2832751621808884,
+      "min": 0.0,
+      "1%": 1.0,
+      "25%": 3.0,
+      "50%": 5.0,
+      "75%": 7.0,
+      "99%": 17.0,
+      "max": 52.0
+    },
+    {
+      "feature": "loan_amnt",
+      "count": 1078479.0,
+      "mean": 14421.075746491124,
+      "std": 8495.831430435734,
+      "min": 500.0,
+      "1%": 1750.0,
+      "25%": 8000.0,
+      "50%": 12000.0,
+      "75%": 20000.0,
+      "99%": 35000.0,
+      "max": 40000.0
+    },
+    {
+      "feature": "annual_inc",
+      "count": 1078475.0,
+      "mean": 75472.85232652588,
+      "std": 67570.67388073639,
+      "min": 1.0,
+      "1%": 18500.0,
+      "25%": 45000.0,
+      "50%": 65000.0,
+      "75%": 90000.0,
+      "99%": 250000.0,
+      "max": 9550000.0
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "count": 1019053.0,
+      "mean": 24.114339489702694,
+      "std": 30.644731591282408,
+      "min": 0.0,
+      "1%": 1.0,
+      "25%": 6.0,
+      "50%": 14.0,
+      "75%": 29.0,
+      "99%": 142.0,
+      "max": 639.0
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "count": 1008202.0,
+      "mean": 182.7785870291866,
+      "std": 93.86849556343634,
+      "min": 3.0,
+      "1%": 31.0,
+      "25%": 118.0,
+      "50%": 165.0,
+      "75%": 231.0,
+      "99%": 472.0,
+      "max": 852.0
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "count": 1078479.0,
+      "mean": 0.49305642483534684,
+      "std": 0.4999520162249446,
+      "min": 0.0,
+      "1%": 0.0,
+      "25%": 0.0,
+      "50%": 0.0,
+      "75%": 1.0,
+      "99%": 1.0,
+      "max": 1.0
+    }
+  ]
+}

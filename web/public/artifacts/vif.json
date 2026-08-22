@@ -1,0 +1,66 @@
+[
+  {
+    "feature": "total_bc_limit",
+    "vif": 1.6100430523497609
+  },
+  {
+    "feature": "avg_cur_bal",
+    "vif": 1.5768527059179003
+  },
+  {
+    "feature": "mort_acc",
+    "vif": 1.5522247051383182
+  },
+  {
+    "feature": "loan_amnt",
+    "vif": 1.5251042561915586
+  },
+  {
+    "feature": "num_actv_rev_tl",
+    "vif": 1.4717430493205608
+  },
+  {
+    "feature": "acc_open_past_24mths",
+    "vif": 1.4546923422474798
+  },
+  {
+    "feature": "home_ownership_MORTGAGE",
+    "vif": 1.4213169619543506
+  },
+  {
+    "feature": "mo_sin_rcnt_tl",
+    "vif": 1.3569639403212974
+  },
+  {
+    "feature": "annual_inc",
+    "vif": 1.2886462346054197
+  },
+  {
+    "feature": "mths_since_recent_bc",
+    "vif": 1.2837974521693085
+  },
+  {
+    "feature": "fico_range_low",
+    "vif": 1.2770363748915408
+  },
+  {
+    "feature": "mo_sin_old_rev_tl_op",
+    "vif": 1.2011196557267045
+  },
+  {
+    "feature": "term",
+    "vif": 1.1986511822586392
+  },
+  {
+    "feature": "dti",
+    "vif": 1.1374112356465695
+  },
+  {
+    "feature": "mths_since_recent_inq",
+    "vif": 1.0442608073998907
+  },
+  {
+    "feature": "loan_to_income",
+    "vif": 1.0000711233611805
+  }
+]

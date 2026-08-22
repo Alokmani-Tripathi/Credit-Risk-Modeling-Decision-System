@@ -1,0 +1,200 @@
+{
+  "logistic_regression": [
+    {
+      "feature": "term",
+      "importance": 0.959215465086669
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "importance": 0.9211280804248713
+    },
+    {
+      "feature": "fico_range_low",
+      "importance": 0.7486472479909975
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "importance": 0.6474965062251009
+    },
+    {
+      "feature": "loan_to_income",
+      "importance": 0.6393848431213809
+    },
+    {
+      "feature": "dti",
+      "importance": 0.5123209380510422
+    },
+    {
+      "feature": "total_bc_limit",
+      "importance": 0.4587253162164538
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "importance": 0.3727553916619616
+    },
+    {
+      "feature": "mort_acc",
+      "importance": 0.2900082803877747
+    },
+    {
+      "feature": "loan_amnt",
+      "importance": 0.2717371659140959
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "importance": 0.21209167919358882
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "importance": 0.19046586973390894
+    },
+    {
+      "feature": "annual_inc",
+      "importance": 0.12109503289263547
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "importance": 0.10015621776216671
+    },
+    {
+      "feature": "avg_cur_bal",
+      "importance": 0.0754660276357792
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "importance": 0.053398150292091245
+    }
+  ],
+  "random_forest": [
+    {
+      "feature": "term",
+      "importance": 0.3250909661736215
+    },
+    {
+      "feature": "fico_range_low",
+      "importance": 0.13104103358715152
+    },
+    {
+      "feature": "loan_to_income",
+      "importance": 0.11585857363266513
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "importance": 0.08855458891488971
+    },
+    {
+      "feature": "dti",
+      "importance": 0.07034109558750998
+    },
+    {
+      "feature": "total_bc_limit",
+      "importance": 0.04846798212712564
+    },
+    {
+      "feature": "avg_cur_bal",
+      "importance": 0.04477814535123992
+    },
+    {
+      "feature": "mort_acc",
+      "importance": 0.03067767850164609
+    },
+    {
+      "feature": "loan_amnt",
+      "importance": 0.02409396429005634
+    },
+    {
+      "feature": "annual_inc",
+      "importance": 0.023667844093100552
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "importance": 0.02077885166741488
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "importance": 0.01888506639497934
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "importance": 0.01770526031081036
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "importance": 0.016857595334620407
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "importance": 0.014064211964510102
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "importance": 0.009137142068658552
+    }
+  ],
+  "xgboost": [
+    {
+      "feature": "term",
+      "importance": 0.601655125617981
+    },
+    {
+      "feature": "fico_range_low",
+      "importance": 0.08887435495853424
+    },
+    {
+      "feature": "acc_open_past_24mths",
+      "importance": 0.05497949570417404
+    },
+    {
+      "feature": "home_ownership_MORTGAGE",
+      "importance": 0.05055522546172142
+    },
+    {
+      "feature": "mort_acc",
+      "importance": 0.0336955189704895
+    },
+    {
+      "feature": "loan_to_income",
+      "importance": 0.03004787303507328
+    },
+    {
+      "feature": "dti",
+      "importance": 0.028027767315506935
+    },
+    {
+      "feature": "mths_since_recent_inq",
+      "importance": 0.02019445039331913
+    },
+    {
+      "feature": "avg_cur_bal",
+      "importance": 0.01770523190498352
+    },
+    {
+      "feature": "total_bc_limit",
+      "importance": 0.017042597755789757
+    },
+    {
+      "feature": "annual_inc",
+      "importance": 0.012397066690027714
+    },
+    {
+      "feature": "mths_since_recent_bc",
+      "importance": 0.010744084604084492
+    },
+    {
+      "feature": "mo_sin_rcnt_tl",
+      "importance": 0.009720386005938053
+    },
+    {
+      "feature": "mo_sin_old_rev_tl_op",
+      "importance": 0.00871992390602827
+    },
+    {
+      "feature": "loan_amnt",
+      "importance": 0.008251162245869637
+    },
+    {
+      "feature": "num_actv_rev_tl",
+      "importance": 0.007389710750430822
+    }
+  ]
+}

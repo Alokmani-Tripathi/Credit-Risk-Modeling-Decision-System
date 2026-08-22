@@ -1,0 +1,11 @@
+.git
+.github
+.next
+node_modules
+web/node_modules
+web/.next
+data/raw
+reports
+__pycache__
+*.pyc
+.env*

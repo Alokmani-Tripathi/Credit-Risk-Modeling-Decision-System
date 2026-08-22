@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* American Express brand tokens */
+  --amex-blue: #016FD0;
+  --amex-deep: #00175a;
+  --amex-mid: #0051a8;
+  --amex-soft: #e8f3fc;
+  --background: #f5f9fd;
+  --foreground: #00175a;
+  --panel: #ffffff;
+  --border: #d0e4f6;
+  --muted: #5b7a9a;
+  --signal: #016FD0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  background:
+    radial-gradient(1000px 420px at 12% -10%, rgba(1, 111, 208, 0.11), transparent 52%),
+    radial-gradient(800px 360px at 100% 0%, rgba(0, 23, 90, 0.045), transparent 48%),
+    linear-gradient(180deg, #f8fbfe 0%, #f3f8fc 45%, #eaf3fa 100%);
+  font-family: var(--font-sans), ui-sans-serif, sans-serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #a8c8e8;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+aside::-webkit-scrollbar-thumb,
+aside *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+}
+aside::-webkit-scrollbar-track,
+aside *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-mist-200 bg-white shadow-panel;
+  }
+  .panel-pad {
+    @apply panel p-5;
+  }
+  .label-caps {
+    @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-mist-500;
+  }
+  .mono-num {
+    @apply font-mono tabular-nums;
+  }
+  .btn-primary {
+    @apply rounded-md bg-signal px-3 py-2 text-sm font-semibold text-white shadow-sm transition;
+  }
+  .btn-primary:hover {
+    @apply bg-ink-600;
+  }
+  .btn-secondary {
+    @apply rounded-md border border-mist-300 bg-white px-3 py-2 text-sm font-medium text-ink-900 transition;
+  }
+  .btn-secondary:hover {
+    @apply border-signal bg-mist-100;
+  }
+}

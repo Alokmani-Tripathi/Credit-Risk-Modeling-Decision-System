@@ -1,0 +1,31 @@
+[
+  {
+    "check": "Out-of-time ROC-AUC >= 0.65",
+    "pass": true,
+    "value": 0.6905305829262163
+  },
+  {
+    "check": "Out-of-time KS >= 0.20",
+    "pass": true,
+    "value": 0.2728724721988156
+  },
+  {
+    "check": "No feature PSI(train\u2192test) >= 0.25",
+    "pass": true,
+    "value": 0.03983876221800181
+  },
+  {
+    "check": "Leakage columns excluded (grade/sub_grade/int_rate)",
+    "pass": true,
+    "value": [
+      "grade",
+      "sub_grade",
+      "int_rate"
+    ]
+  },
+  {
+    "check": "Time-based validation used",
+    "pass": true,
+    "value": "2016-10-01 00:00:00 \u2192 2016-10-01 00:00:00"
+  }
+]

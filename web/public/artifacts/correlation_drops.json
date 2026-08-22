@@ -1,0 +1,12 @@
+[
+  {
+    "dropped": "tot_cur_bal",
+    "kept": "avg_cur_bal",
+    "abs_corr": 0.8396746624805366
+  },
+  {
+    "dropped": "home_ownership_RENT",
+    "kept": "home_ownership_MORTGAGE",
+    "abs_corr": 0.8098935394010218
+  }
+]
