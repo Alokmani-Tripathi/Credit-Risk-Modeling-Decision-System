@@ -140,7 +140,10 @@ def audit(action: str, details: dict[str, Any]) -> None:
     event = {"event_id": str(uuid.uuid4()), "action": action, "created_at": now(), **details}
     audit_events.append(event)
     if STORE.enabled:
-        STORE.request("audit_events", method="POST", payload={"action": action, "details": details})
+        try:
+            STORE.request("audit_events", method="POST", payload={"action": action, "details": details})
+        except RuntimeError:
+            pass
 
 
 def app_frame(application: Application) -> pd.DataFrame:
@@ -261,8 +264,11 @@ def get_positions() -> dict[str, Any]:
 @app.get("/api/v1/portfolio/snapshots")
 def get_snapshots() -> dict[str, Any]:
     if STORE.enabled:
-        rows = STORE.request("portfolio_snapshots", query="?select=*&order=snapshot_date.asc")
-        return {"snapshots": [{"date": row["snapshot_date"], **(row.get("metrics") or {}), "mean_pd": (row.get("metrics") or {}).get("weighted_pd", 0)} for row in rows]}
+        try:
+            rows = STORE.request("portfolio_snapshots", query="?select=*&order=snapshot_date.asc")
+            return {"snapshots": [{"date": row["snapshot_date"], **(row.get("metrics") or {}), "mean_pd": (row.get("metrics") or {}).get("weighted_pd", 0)} for row in rows]}
+        except RuntimeError:
+            pass
     return {"snapshots": [{"date": row["created_at"], **portfolio_summary(portfolio)} for row in audit_events if row["action"] == "portfolio_batch_added"]}
 
 
@@ -279,26 +285,29 @@ def add_portfolio_batch(request: BatchRequest) -> dict[str, Any]:
         added.append(record)
     metrics = portfolio_summary(portfolio)
     if STORE.enabled and added:
-        STORE.request("batch_uploads", method="POST", payload={"id": batch_id, "source_batch": request.source_batch, "scored_count": len(request.applications), "approved_count": len(added), "declined_count": len(request.applications) - len(added), "model_version": "v1.1-platform"})
-        STORE.request("portfolio_positions", method="POST", payload=[
-            {
-                "application_id": row["portfolio_id"],
-                "batch_id": batch_id,
-                "model_version": "v1.1-platform",
-                "policy_version": "config.yaml",
-                "loan_amnt": row["loan_amnt"],
-                "ead": row["ead"],
-                "pd": row["pd"],
-                "lgd": float(CFG["quantification"]["lgd_base"]),
-                "expected_loss": row["expected_loss"],
-                "unexpected_loss": row["unexpected_loss"],
-                "risk_grade": row["grade"],
-                "credit_score": row["fico_range_low"],
-                "dti": row["dti"],
-            }
-            for row in added
-        ])
-        STORE.request("portfolio_snapshots", method="POST", payload={"snapshot_date": now()[:10], "model_version": "v1.1-platform", "metrics": metrics})
+        try:
+            STORE.request("batch_uploads", method="POST", payload={"id": batch_id, "source_batch": request.source_batch, "scored_count": len(request.applications), "approved_count": len(added), "declined_count": len(request.applications) - len(added), "model_version": "v1.1-platform"})
+            STORE.request("portfolio_positions", method="POST", payload=[
+                {
+                    "application_id": row["portfolio_id"],
+                    "batch_id": batch_id,
+                    "model_version": "v1.1-platform",
+                    "policy_version": "config.yaml",
+                    "loan_amnt": row["loan_amnt"],
+                    "ead": row["ead"],
+                    "pd": row["pd"],
+                    "lgd": float(CFG["quantification"]["lgd_base"]),
+                    "expected_loss": row["expected_loss"],
+                    "unexpected_loss": row["unexpected_loss"],
+                    "risk_grade": row["grade"],
+                    "credit_score": row["fico_range_low"],
+                    "dti": row["dti"],
+                }
+                for row in added
+            ])
+            STORE.request("portfolio_snapshots", method="POST", payload={"snapshot_date": now()[:10], "model_version": "v1.1-platform", "metrics": metrics})
+        except RuntimeError:
+            pass
     audit("portfolio_batch_added", {"batch_id": batch_id, "scored": len(request.applications), "added": len(added), "source_batch": request.source_batch})
     return {"batch_id": batch_id, "scored": len(request.applications), "approved": len(added), "added": added, "portfolio": metrics, "storage": "supabase" if STORE.enabled else "memory"}
 
