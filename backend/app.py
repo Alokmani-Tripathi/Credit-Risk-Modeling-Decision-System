@@ -230,6 +230,34 @@ def health() -> dict[str, Any]:
     return {"status": "ok", "service": "credit-risk-api", "model": "logistic_regression_scorecard", "version": "1.0.0", "storage": "supabase" if STORE.enabled else "memory-demo", "portfolio_loans": len(portfolio)}
 
 
+@app.get("/api/v1/debug/supabase")
+def debug_supabase() -> dict[str, Any]:
+    """Diagnostic endpoint to test Supabase connectivity."""
+    result: dict[str, Any] = {
+        "enabled": STORE.enabled,
+        "url_set": bool(STORE.url),
+        "key_prefix": STORE.key[:20] + "..." if STORE.key else "(empty)",
+        "url_prefix": STORE.url[:40] + "..." if STORE.url else "(empty)",
+    }
+    if not STORE.enabled:
+        result["error"] = "SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set"
+        return result
+    try:
+        rows = STORE.request("audit_events", query="?select=id&limit=1")
+        result["read_test"] = "success"
+        result["rows_returned"] = len(rows)
+    except RuntimeError as exc:
+        result["read_test"] = "failed"
+        result["read_error"] = str(exc)
+    try:
+        STORE.request("audit_events", method="POST", payload={"action": "connection_test", "details": {"source": "debug_endpoint"}})
+        result["write_test"] = "success"
+    except RuntimeError as exc:
+        result["write_test"] = "failed"
+        result["write_error"] = str(exc)
+    return result
+
+
 @app.get("/api/v1/models/active")
 def active_model() -> dict[str, Any]:
     metrics = json.loads((MODELS / "metrics.json").read_text(encoding="utf-8"))
