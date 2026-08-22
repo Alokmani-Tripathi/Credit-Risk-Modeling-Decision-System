@@ -11,6 +11,13 @@ data/processed/
 models/*.joblib
 models/*.pkl
 models/*.json
+# Runtime artifacts required by the Render FastAPI service. Keep these versioned
+# with the application so a source-based deployment can load the scorecard.
+!models/logistic_regression.joblib
+!models/schema.json
+!models/scorecard.json
+!models/woe_bins.json
+!models/metrics.json
 reports/*.json
 .DS_Store
 Thumbs.db
