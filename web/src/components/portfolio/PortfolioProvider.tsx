@@ -24,13 +24,44 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    function loadFromLocalOrSeed() {
+      try {
+        const saved = localStorage.getItem(STORAGE);
+        if (saved) {
+          const data = JSON.parse(saved);
+          setRecords(Array.isArray(data.records) ? data.records : []);
+          setSnapshots(Array.isArray(data.snapshots) ? data.snapshots : []);
+          setBatches(Array.isArray(data.batches) ? data.batches : []);
+          setLoading(false);
+          return;
+        }
+      } catch {
+        localStorage.removeItem(STORAGE);
+      }
+      Promise.all([
+        fetch("/artifacts/scorecard.json").then((r) => r.json()),
+        fetch("/artifacts/woe_bins.json").then((r) => r.json()),
+        fetch("/batch-examples/training_reference_sample.csv").then((r) => r.text()),
+      ]).then(([scorecard, woeBins, csv]) => {
+        const seeded = scorePortfolioRows(Papa.parse(csv), scorecard, woeBins, "default-portfolio").records;
+        setRecords(seeded);
+        setSnapshots([{ date: new Date().toISOString().slice(0, 10), ...snapshotFor(seeded) }]);
+        setLoading(false);
+      }).catch(() => setLoading(false));
+    }
+
     if (apiConfig()) {
       Promise.all([
         apiFetch<{ positions: PortfolioRecord[] }>("/api/v1/portfolio/positions"),
         apiFetch<{ snapshots: PortfolioSnapshot[] }>("/api/v1/portfolio/snapshots"),
         apiFetch<{ events: Array<{ action: string; source_batch?: string; scored?: number; added?: number; created_at: string }> }>("/api/v1/audit/events"),
       ]).then(([positions, snapshotData, audit]) => {
-        setRecords(positions.positions || []);
+        const pos = positions.positions || [];
+        if (pos.length === 0) {
+          loadFromLocalOrSeed();
+          return;
+        }
+        setRecords(pos);
         setSnapshots(snapshotData.snapshots || []);
         setBatches((audit.events || []).filter((event) => event.action === "portfolio_batch_added").map((event) => ({
           batch: event.source_batch || "API batch",
@@ -42,32 +73,12 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
           added: event.added || 0,
         })));
         setLoading(false);
-      }).catch(() => setLoading(false));
+      }).catch(() => {
+        loadFromLocalOrSeed();
+      });
       return;
     }
-    try {
-      const saved = localStorage.getItem(STORAGE);
-      if (saved) {
-        const data = JSON.parse(saved);
-        setRecords(Array.isArray(data.records) ? data.records : []);
-        setSnapshots(Array.isArray(data.snapshots) ? data.snapshots : []);
-        setBatches(Array.isArray(data.batches) ? data.batches : []);
-        setLoading(false);
-        return;
-      }
-    } catch {
-      localStorage.removeItem(STORAGE);
-    }
-    Promise.all([
-      fetch("/artifacts/scorecard.json").then((r) => r.json()),
-      fetch("/artifacts/woe_bins.json").then((r) => r.json()),
-      fetch("/batch-examples/training_reference_sample.csv").then((r) => r.text()),
-    ]).then(([scorecard, woeBins, csv]) => {
-      const seeded = scorePortfolioRows(Papa.parse(csv), scorecard, woeBins, "default-portfolio").records;
-      setRecords(seeded);
-      setSnapshots([{ date: new Date().toISOString().slice(0, 10), ...snapshotFor(seeded) }]);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    loadFromLocalOrSeed();
   }, []);
 
   useEffect(() => {
@@ -75,20 +86,26 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   }, [loading, records, snapshots, batches]);
 
   async function addBatch(file: File) {
+    const csvText = await file.text();
+    const rows = Papa.parse(csvText);
+
     if (apiConfig()) {
-      const rows = Papa.parse(await file.text());
-      const response = await apiFetch<{ approved: number; added: PortfolioRecord[]; portfolio: PortfolioRecord }>("/api/v1/portfolio/batches", {
-        method: "POST",
-        body: JSON.stringify({ applications: rows.map(rowToApplicant), source_batch: file.name }),
-      });
-      setRecords(response.added ? [...records, ...response.added] : records);
-      return { scored: rows.length, approved: response.approved, duplicates: 0 };
+      try {
+        const response = await apiFetch<{ approved: number; added: PortfolioRecord[]; portfolio: PortfolioRecord }>("/api/v1/portfolio/batches", {
+          method: "POST",
+          body: JSON.stringify({ applications: rows.map(rowToApplicant), source_batch: file.name }),
+        });
+        setRecords(response.added ? [...records, ...response.added] : records);
+        return { scored: rows.length, approved: response.approved, duplicates: 0 };
+      } catch {
+        // API unavailable (CORS or network) — fall through to client-side scoring
+      }
     }
     const [scorecard, woeBins] = await Promise.all([
       fetch("/artifacts/scorecard.json").then((r) => r.json()),
       fetch("/artifacts/woe_bins.json").then((r) => r.json()),
     ]);
-    const result = scorePortfolioRows(Papa.parse(await file.text()), scorecard, woeBins, file.name);
+    const result = scorePortfolioRows(rows, scorecard, woeBins, file.name);
     const existing = new Set(records.map((r) => `${r.loan_amnt}|${r.annual_inc}|${r.fico_range_low}|${r.dti}|${r.term}`));
     const additions = result.records.filter((r) => !existing.has(`${r.loan_amnt}|${r.annual_inc}|${r.fico_range_low}|${r.dti}|${r.term}`));
     const next = [...records, ...additions];
