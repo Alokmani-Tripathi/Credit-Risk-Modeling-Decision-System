@@ -131,11 +131,13 @@ export function portfolioMetrics(records: PortfolioRecord[], lgd = 0.55): Portfo
     return { grade, loans: rows.length, ead: groupEad, mean_pd: rows.reduce((sum, r) => sum + r.pd, 0) / rows.length, expected_loss: groupEad * rows.reduce((sum, r) => sum + r.pd, 0) / rows.length * lgd };
   }).sort((a, b) => a.grade.localeCompare(b.grade));
   const banded = (field: "fico_range_low" | "dti", bands: Array<[number, string]>) =>
-    Array.from(groups((r) => bands.find(([limit]) => r[field] < limit)?.[1] || bands[bands.length - 1][1]), ([band, rows]) => ({
+    Array.from(groups((r) => bands.find(([limit]) => (getFico(r, field)) < limit)?.[1] || bands[bands.length - 1][1]), ([band, rows]) => ({
       band,
       loans: rows.length,
       ead: rows.reduce((sum, r) => sum + r.loan_amnt, 0),
     }));
+  const scoredRecords = records.filter((r) => r.score != null && r.score > 0);
+  const ficoRecords = records.filter((r) => getFico(r, "fico_range_low") > 0);
   return {
     loans: records.length,
     ead,
@@ -147,17 +149,22 @@ export function portfolioMetrics(records: PortfolioRecord[], lgd = 0.55): Portfo
     el_rate: expectedLoss / Math.max(ead, 1),
     unexpected_loss: unexpectedLoss,
     capital_proxy: expectedLoss + unexpectedLoss,
-    average_score: records.reduce((sum, r) => sum + r.score, 0) / Math.max(records.length, 1),
-    average_fico: records.reduce((sum, r) => sum + r.fico_range_low, 0) / Math.max(records.length, 1),
-    average_dti: records.reduce((sum, r) => sum + r.dti, 0) / Math.max(records.length, 1),
+    average_score: scoredRecords.length > 0 ? scoredRecords.reduce((sum, r) => sum + r.score, 0) / scoredRecords.length : 0,
+    average_fico: ficoRecords.length > 0 ? ficoRecords.reduce((sum, r) => sum + getFico(r, "fico_range_low"), 0) / ficoRecords.length : 0,
+    average_dti: records.reduce((sum, r) => sum + (r.dti || 0), 0) / Math.max(records.length, 1),
     high_risk_exposure: records.filter((r) => ["E", "F", "G"].includes(r.grade)).reduce((sum, r) => sum + r.loan_amnt, 0),
     high_risk_share: records.filter((r) => ["E", "F", "G"].includes(r.grade)).reduce((sum, r) => sum + r.loan_amnt, 0) / Math.max(ead, 1),
     by_grade: byGrade,
     by_fico: banded("fico_range_low", [[660, "<660"], [700, "660–699"], [740, "700–739"], [780, "740–779"], [850, "780+"]]),
     by_dti: banded("dti", [[20, "<20%"], [30, "20–29%"], [40, "30–39%"], [100, "40%+"]]),
-    by_term: Array.from(groups((r) => `${r.term} months`), ([term, rows]) => ({ term, loans: rows.length, ead: rows.reduce((sum, r) => sum + r.loan_amnt, 0) })),
-    by_ownership: Array.from(groups((r) => r.home_ownership), ([ownership, rows]) => ({ ownership, loans: rows.length, ead: rows.reduce((sum, r) => sum + r.loan_amnt, 0) })),
+    by_term: Array.from(groups((r) => r.term ? `${r.term} months` : "N/A"), ([term, rows]) => ({ term, loans: rows.length, ead: rows.reduce((sum, r) => sum + r.loan_amnt, 0) })).filter((r) => r.term !== "N/A" || r.loans > 0),
+    by_ownership: Array.from(groups((r) => r.home_ownership || "Unknown"), ([ownership, rows]) => ({ ownership, loans: rows.length, ead: rows.reduce((sum, r) => sum + r.loan_amnt, 0) })).filter((r) => r.ownership !== "Unknown" || r.loans > 0),
   };
+}
+
+function getFico(r: PortfolioRecord, _field: "fico_range_low" | "dti"): number {
+  if (_field === "fico_range_low") return r.fico_range_low || (r as any).credit_score || 0;
+  return r.dti || 0;
 }
 
 export type StressScenario = {
