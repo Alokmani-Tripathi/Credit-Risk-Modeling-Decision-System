@@ -4,55 +4,86 @@ import { useEffect, useState } from "react";
 import { PageHeader, Panel, MetricCard, Badge, SimpleTable } from "@/components/ui/primitives";
 import { defaultApplicant, scoreApplicant, type Applicant, type DecisionResult } from "@/lib/decision-engine";
 import { money, pct } from "@/lib/format";
+import { cn } from "@/lib/cn";
 
-type FieldDef = [keyof Applicant, string, number, number, number];
+type FieldDef = {
+  key: keyof Applicant;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  suffix?: string;
+};
 
-const FIELD_GROUPS: Array<{ title: string; icon: string; fields: FieldDef[] }> = [
+const FIELD_GROUPS: Array<{ title: string; fields: FieldDef[] }> = [
   {
     title: "Loan Details",
-    icon: "💳",
     fields: [
-      ["loan_amnt", "Loan amount ($)", 1000, 40000, 500],
+      { key: "loan_amnt", label: "Loan amount", min: 1000, max: 40000, step: 500, suffix: "$" },
     ],
   },
   {
     title: "Borrower Profile",
-    icon: "👤",
     fields: [
-      ["annual_inc", "Annual income ($)", 10000, 500000, 1000],
-      ["emp_length", "Employment length (yrs)", 0, 10, 1],
+      { key: "annual_inc", label: "Annual income", min: 10000, max: 500000, step: 1000, suffix: "$" },
+      { key: "emp_length", label: "Employment length", min: 0, max: 10, step: 1, suffix: "yrs" },
     ],
   },
   {
     title: "Credit Score & Debt",
-    icon: "📊",
     fields: [
-      ["fico_range_low", "FICO score", 610, 850, 1],
-      ["dti", "Debt-to-income ratio (%)", 0, 50, 0.1],
-      ["mort_acc", "Mortgage accounts", 0, 15, 1],
+      { key: "fico_range_low", label: "FICO score", min: 610, max: 850, step: 1 },
+      { key: "dti", label: "Debt-to-income", min: 0, max: 50, step: 0.1, suffix: "%" },
+      { key: "mort_acc", label: "Mortgage accounts", min: 0, max: 15, step: 1 },
     ],
   },
   {
     title: "Credit History",
-    icon: "📅",
     fields: [
-      ["acc_open_past_24mths", "Accounts opened (24 months)", 0, 25, 1],
-      ["num_actv_rev_tl", "Active revolving accounts", 0, 25, 1],
-      ["mths_since_recent_inq", "Months since last inquiry", 0, 36, 1],
-      ["mths_since_recent_bc", "Months since last bankcard", 0, 120, 1],
-      ["mo_sin_old_rev_tl_op", "Oldest revolving account (months)", 12, 600, 1],
-      ["mo_sin_rcnt_tl", "Most recent trade (months)", 0, 120, 1],
+      { key: "acc_open_past_24mths", label: "Accounts opened (24m)", min: 0, max: 25, step: 1 },
+      { key: "num_actv_rev_tl", label: "Active revolving TLs", min: 0, max: 25, step: 1 },
+      { key: "mths_since_recent_inq", label: "Months since inquiry", min: 0, max: 36, step: 1 },
+      { key: "mths_since_recent_bc", label: "Months since bankcard", min: 0, max: 120, step: 1 },
+      { key: "mo_sin_old_rev_tl_op", label: "Oldest revolving (months)", min: 12, max: 600, step: 1 },
+      { key: "mo_sin_rcnt_tl", label: "Recent trade (months)", min: 0, max: 120, step: 1 },
     ],
   },
   {
     title: "Balances & Limits",
-    icon: "🏦",
     fields: [
-      ["avg_cur_bal", "Average current balance ($)", 0, 250000, 500],
-      ["total_bc_limit", "Total bankcard limit ($)", 0, 300000, 500],
+      { key: "avg_cur_bal", label: "Average current balance", min: 0, max: 250000, step: 500, suffix: "$" },
+      { key: "total_bc_limit", label: "Total bankcard limit", min: 0, max: 300000, step: 500, suffix: "$" },
     ],
   },
 ];
+
+function InputField({
+  field,
+  value,
+  onChange,
+}: {
+  field: FieldDef;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-medium text-mist-600">{field.label}</span>
+        {field.suffix && <span className="text-[11px] text-mist-400">{field.suffix}</span>}
+      </div>
+      <input
+        type="number"
+        className="w-full rounded-lg border border-mist-200 bg-mist-50/50 px-3 py-2.5 text-sm font-medium text-ink-900 mono-num transition-colors focus:border-signal focus:bg-white focus:outline-none focus:ring-2 focus:ring-signal/20"
+        value={value}
+        min={field.min}
+        max={field.max}
+        step={field.step}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    </div>
+  );
+}
 
 export default function DecisionEnginePage() {
   const [applicant, setApplicant] = useState<Applicant>(defaultApplicant());
@@ -102,166 +133,242 @@ export default function DecisionEnginePage() {
         title="Credit decision engine"
         description="Scorecard PD with policy overlay: approve / refer / decline, limit suggestion, risk-based spread, and point contributions."
       />
-      <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-        <div className="space-y-4">
+      <div className="grid gap-6 xl:grid-cols-[440px_1fr]">
+        {/* LEFT PANEL — Application form */}
+        <div>
           <Panel title="Application inputs">
-            <div className="space-y-5">
-              {/* Loan & Term group */}
-              <fieldset>
-                <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-signal">
-                  <span>Loan Details</span>
+            <div className="space-y-6">
+              {/* Loan Details + Term */}
+              <fieldset className="space-y-3">
+                <legend className="mb-1 border-b border-mist-100 pb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-signal">
+                  Loan Details
                 </legend>
-                <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                  <label className="block text-sm">
-                    <span className="text-mist-500">Loan amount ($)</span>
-                    <input
-                      type="number"
-                      className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2 mono-num"
-                      value={Number(applicant.loan_amnt)}
-                      min={1000}
-                      max={40000}
-                      step={500}
-                      onChange={(e) => updateField("loan_amnt", Number(e.target.value))}
-                    />
-                  </label>
-                  <label className="block text-sm">
-                    <span className="text-mist-500">Term</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField
+                    field={{ key: "loan_amnt", label: "Loan amount", min: 1000, max: 40000, step: 500, suffix: "$" }}
+                    value={Number(applicant.loan_amnt)}
+                    onChange={(v) => updateField("loan_amnt", v)}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[13px] font-medium text-mist-600">Term</span>
+                      <span className="text-[11px] text-mist-400">months</span>
+                    </div>
                     <select
-                      className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2"
+                      className="w-full rounded-lg border border-mist-200 bg-mist-50/50 px-3 py-2.5 text-sm font-medium text-ink-900 transition-colors focus:border-signal focus:bg-white focus:outline-none focus:ring-2 focus:ring-signal/20"
                       value={applicant.term}
                       onChange={(e) => updateField("term", Number(e.target.value))}
                     >
                       <option value={36}>36 months</option>
                       <option value={60}>60 months</option>
                     </select>
-                  </label>
+                  </div>
                 </div>
               </fieldset>
 
-              {/* Borrower Profile group */}
-              <fieldset>
-                <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-signal">
-                  <span>Borrower Profile</span>
+              {/* Borrower Profile */}
+              <fieldset className="space-y-3">
+                <legend className="mb-1 border-b border-mist-100 pb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-signal">
+                  Borrower Profile
                 </legend>
-                <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                  <label className="block text-sm">
-                    <span className="text-mist-500">Annual income ($)</span>
-                    <input
-                      type="number"
-                      className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2 mono-num"
-                      value={Number(applicant.annual_inc)}
-                      min={10000}
-                      max={500000}
-                      step={1000}
-                      onChange={(e) => updateField("annual_inc", Number(e.target.value))}
-                    />
-                  </label>
-                  <label className="block text-sm">
-                    <span className="text-mist-500">Employment (yrs)</span>
-                    <input
-                      type="number"
-                      className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2 mono-num"
-                      value={Number(applicant.emp_length)}
-                      min={0}
-                      max={10}
-                      step={1}
-                      onChange={(e) => updateField("emp_length", Number(e.target.value))}
-                    />
-                  </label>
-                  <label className="block text-sm sm:col-span-2">
-                    <span className="text-mist-500">Home ownership</span>
-                    <select
-                      className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2"
-                      value={applicant.home_ownership}
-                      onChange={(e) => updateField("home_ownership", e.target.value as Applicant["home_ownership"])}
-                    >
-                      <option value="MORTGAGE">Mortgage</option>
-                      <option value="RENT">Rent</option>
-                      <option value="OWN">Own</option>
-                    </select>
-                  </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField
+                    field={{ key: "annual_inc", label: "Annual income", min: 10000, max: 500000, step: 1000, suffix: "$" }}
+                    value={Number(applicant.annual_inc)}
+                    onChange={(v) => updateField("annual_inc", v)}
+                  />
+                  <InputField
+                    field={{ key: "emp_length", label: "Employment length", min: 0, max: 10, step: 1, suffix: "yrs" }}
+                    value={Number(applicant.emp_length)}
+                    onChange={(v) => updateField("emp_length", v)}
+                  />
                 </div>
-              </fieldset>
-
-              {/* Remaining groups from FIELD_GROUPS */}
-              {FIELD_GROUPS.slice(2).map((group) => (
-                <fieldset key={group.title}>
-                  <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-signal">
-                    <span>{group.title}</span>
-                  </legend>
-                  <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                    {group.fields.map(([key, label, min, max, step]) => (
-                      <label key={key} className="block text-sm">
-                        <span className="text-mist-500">{label}</span>
-                        <input
-                          type="number"
-                          className="mt-1 w-full rounded-md border border-mist-300 px-3 py-2 mono-num"
-                          value={Number(applicant[key])}
-                          min={min}
-                          max={max}
-                          step={step}
-                          onChange={(e) => updateField(key, Number(e.target.value) as never)}
-                        />
-                      </label>
+                <div className="space-y-1">
+                  <span className="text-[13px] font-medium text-mist-600">Home ownership</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["MORTGAGE", "RENT", "OWN"] as const).map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => updateField("home_ownership", opt)}
+                        className={cn(
+                          "rounded-lg border px-3 py-2 text-sm font-medium transition-all",
+                          applicant.home_ownership === opt
+                            ? "border-signal bg-signal/10 text-signal ring-1 ring-signal/30"
+                            : "border-mist-200 bg-mist-50/50 text-mist-600 hover:border-mist-300 hover:bg-white",
+                        )}
+                      >
+                        {opt.charAt(0) + opt.slice(1).toLowerCase()}
+                      </button>
                     ))}
                   </div>
-                </fieldset>
-              ))}
+                </div>
+              </fieldset>
+
+              {/* Credit Score & Debt — force even grid */}
+              <fieldset className="space-y-3">
+                <legend className="mb-1 border-b border-mist-100 pb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-signal">
+                  Credit Score & Debt
+                </legend>
+                <div className="grid grid-cols-2 gap-3">
+                  <InputField
+                    field={{ key: "fico_range_low", label: "FICO score", min: 610, max: 850, step: 1 }}
+                    value={Number(applicant.fico_range_low)}
+                    onChange={(v) => updateField("fico_range_low", v)}
+                  />
+                  <InputField
+                    field={{ key: "dti", label: "Debt-to-income", min: 0, max: 50, step: 0.1, suffix: "%" }}
+                    value={Number(applicant.dti)}
+                    onChange={(v) => updateField("dti", v)}
+                  />
+                  <InputField
+                    field={{ key: "mort_acc", label: "Mortgage accounts", min: 0, max: 15, step: 1 }}
+                    value={Number(applicant.mort_acc)}
+                    onChange={(v) => updateField("mort_acc", v)}
+                  />
+                  <div />
+                </div>
+              </fieldset>
+
+              {/* Credit History */}
+              <fieldset className="space-y-3">
+                <legend className="mb-1 border-b border-mist-100 pb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-signal">
+                  Credit History
+                </legend>
+                <div className="grid grid-cols-2 gap-3">
+                  {FIELD_GROUPS[3].fields.map((field) => (
+                    <InputField
+                      key={field.key}
+                      field={field}
+                      value={Number(applicant[field.key])}
+                      onChange={(v) => updateField(field.key, v as never)}
+                    />
+                  ))}
+                </div>
+              </fieldset>
+
+              {/* Balances & Limits */}
+              <fieldset className="space-y-3">
+                <legend className="mb-1 border-b border-mist-100 pb-2 text-[11px] font-bold uppercase tracking-[0.1em] text-signal">
+                  Balances & Limits
+                </legend>
+                <div className="grid grid-cols-2 gap-3">
+                  {FIELD_GROUPS[4].fields.map((field) => (
+                    <InputField
+                      key={field.key}
+                      field={field}
+                      value={Number(applicant[field.key])}
+                      onChange={(v) => updateField(field.key, v as never)}
+                    />
+                  ))}
+                </div>
+              </fieldset>
             </div>
 
             {/* Action buttons */}
-            <div className="mt-6 flex items-center gap-3 border-t border-mist-200 pt-4">
+            <div className="mt-6 flex flex-col gap-3 border-t border-mist-200 pt-5 sm:flex-row sm:items-center">
               <button
                 type="button"
                 onClick={handleScore}
-                className="btn-primary relative flex items-center gap-2"
+                className={cn(
+                  "relative rounded-lg px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all",
+                  hasChanges
+                    ? "bg-signal ring-2 ring-signal/30 hover:bg-ink-600"
+                    : "bg-signal hover:bg-ink-600",
+                )}
               >
                 Score Application
                 {hasChanges && (
-                  <span className="absolute -right-1 -top-1 flex h-3 w-3">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-                    <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
+                  <span className="absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-refer opacity-75" />
+                    <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-refer" />
                   </span>
                 )}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="btn-secondary"
+                className="rounded-lg border border-mist-300 bg-white px-4 py-2.5 text-sm font-medium text-mist-700 transition hover:border-mist-400 hover:text-ink-900"
               >
-                Reset
+                Reset defaults
               </button>
               {hasChanges && (
-                <span className="text-xs text-refer font-medium">Inputs changed — click Score to update</span>
+                <span className="text-[12px] font-medium text-refer">
+                  Inputs modified — score to update results
+                </span>
               )}
             </div>
           </Panel>
         </div>
 
+        {/* RIGHT PANEL — Results */}
         <div className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3">
-            <MetricCard label="Decision" value={result?.decision || "—"} tone={tone as any} />
-            <MetricCard label="PD" value={pct(result?.pd)} />
-            <MetricCard label="Grade" value={result?.grade || "—"} />
-            <MetricCard label="Score" value={String(result?.score ?? "—")} />
-            <MetricCard label="Expected loss" value={money(result?.expected_loss)} />
-            <MetricCard label="Limit" value={money(result?.recommended_limit)} tone="signal" />
+          {/* Decision Hero */}
+          <div className={cn(
+            "flex items-center gap-4 rounded-xl border p-5 shadow-sm",
+            tone === "approve" ? "border-emerald-200 bg-emerald-50/50" :
+            tone === "refer" ? "border-amber-200 bg-amber-50/50" :
+            "border-red-200 bg-red-50/50",
+          )}>
+            <div className={cn(
+              "flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white",
+              tone === "approve" ? "bg-approve" : tone === "refer" ? "bg-refer" : "bg-decline",
+            )}>
+              {tone === "approve" ? "\u2713" : tone === "refer" ? "?" : "\u2717"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold uppercase tracking-wider text-mist-500">Decision</div>
+              <div className={cn(
+                "mt-0.5 text-2xl font-bold tracking-tight",
+                tone === "approve" ? "text-approve" : tone === "refer" ? "text-refer" : "text-decline",
+              )}>
+                {result?.decision || "—"}
+              </div>
+            </div>
+            <div className="hidden text-right sm:block">
+              <div className="text-xs text-mist-500">Grade</div>
+              <div className="text-xl font-bold text-ink-900">{result?.grade || "—"}</div>
+            </div>
+            <div className="hidden text-right md:block">
+              <div className="text-xs text-mist-500">Score</div>
+              <div className="text-xl font-bold mono-num text-ink-900">{result?.score ?? "—"}</div>
+            </div>
           </div>
-          <Panel title="Decision detail">
+
+          {/* Key Metrics */}
+          <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+            <MetricCard label="PD" value={pct(result?.pd)} />
+            <MetricCard label="Expected loss" value={money(result?.expected_loss)} tone="refer" />
+            <MetricCard label="Credit limit" value={money(result?.recommended_limit)} tone="signal" />
+            <MetricCard label="Spread" value={`${result?.suggested_spread_bps ?? 0} bps`} />
+          </div>
+
+          {/* Decision Detail */}
+          <Panel title="Risk assessment">
             <div className="flex flex-wrap gap-2">
               <Badge tone={tone as any}>{result?.decision}</Badge>
-              <Badge tone="neutral">Spread {result?.suggested_spread_bps ?? 0} bps</Badge>
               <Badge tone="neutral">LGD {pct(result?.lgd, 0)}</Badge>
               <Badge tone="neutral">UL {money(result?.unexpected_loss)}</Badge>
+              <Badge tone="neutral">EAD {money(result?.ead)}</Badge>
             </div>
-            <ul className="mt-4 space-y-2 text-sm text-mist-700">
-              {(result?.reasons || []).map((r) => (
-                <li key={r}>&#8226; {r}</li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-mist-500">EL = PD × LGD × EAD · Scorecard path (WoE logistic)</p>
+            {(result?.reasons || []).length > 0 && (
+              <div className="mt-4 rounded-lg bg-mist-50 p-3">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-mist-500">Reason codes</div>
+                <ul className="mt-2 space-y-1.5">
+                  {(result?.reasons || []).map((r) => (
+                    <li key={r} className="flex items-start gap-2 text-sm text-mist-700">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-mist-400" />
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <p className="mt-4 text-[11px] text-mist-400">EL = PD × LGD × EAD · Scorecard path (WoE logistic regression)</p>
           </Panel>
-          <Panel title="Top point contributions">
+
+          {/* Point Contributions */}
+          <Panel title="Scorecard point contributions">
             <SimpleTable
               columns={[
                 { key: "feature", label: "Feature" },
@@ -269,9 +376,9 @@ export default function DecisionEnginePage() {
                 { key: "points", label: "Points", align: "right" },
               ]}
               rows={(result?.breakdown || []).slice(0, 10).map((b) => ({
-                feature: b.feature,
+                feature: b.feature.replace(/_/g, " "),
                 woe: b.woe.toFixed(3),
-                points: b.points.toFixed(2),
+                points: b.points.toFixed(1),
               }))}
             />
           </Panel>
