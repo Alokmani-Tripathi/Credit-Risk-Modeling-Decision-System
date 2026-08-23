@@ -29,21 +29,21 @@ export function LifecycleBar() {
 
   return (
     <section className="text-white" style={{ backgroundColor: "#016FD0" }} aria-label="Platform hero">
-      <div className="w-full px-6 md:px-8">
+      <div className="w-full px-4 sm:px-6 md:px-8">
         {/* Title row — icon + title aligned */}
-        <div className="flex items-center justify-between gap-4 pt-4 md:pt-5">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="flex items-center justify-between gap-3 pt-4 md:gap-4 md:pt-5">
+          <div className="flex min-w-0 items-center gap-2.5 md:gap-3">
             <button
               type="button"
               onClick={toggleSidebar}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/12 text-white ring-1 ring-white/25 transition hover:bg-white/20"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white/12 text-white ring-1 ring-white/25 transition hover:bg-white/20 md:h-9 md:w-9"
               aria-label={sidebarOpen ? "Hide workspace menu" : "Show workspace menu"}
               aria-expanded={sidebarOpen}
               aria-controls="workspace-sidebar"
             >
               <MenuIcon open={sidebarOpen} />
             </button>
-            <h1 className="truncate text-[18px] font-semibold leading-none tracking-tight md:text-[22px]">
+            <h1 className="truncate text-[15px] font-semibold leading-none tracking-tight sm:text-[18px] md:text-[22px]">
               Credit Risk Modeling &amp; Decision Platform
             </h1>
           </div>
@@ -63,15 +63,15 @@ export function LifecycleBar() {
 
         {/* Independent lifecycle buttons — outlined chips, not a tray */}
         <nav className="mt-4 pb-4" aria-label="Lifecycle stages">
-          <ul className="flex w-full gap-2">
+          <ul className="-mx-6 flex w-[calc(100%+3rem)] gap-1.5 overflow-x-auto px-6 scrollbar-none sm:gap-2 md:mx-0 md:w-full md:px-0">
             {NAV.map((group) => {
               const active = group.id === current.id;
               return (
-                <li key={group.id} className="flex min-w-0 flex-1 justify-center">
+                <li key={group.id} className="flex shrink-0 justify-center md:min-w-0 md:flex-1">
                   <Link
                     href={group.href}
                     className={cn(
-                      "group relative flex w-fit items-center justify-center rounded-md px-10 py-2 text-center text-[13px] tracking-tight transition-colors duration-150 md:text-[14px]",
+                      "group relative flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-center text-[12px] tracking-tight transition-colors duration-150 sm:px-5 md:px-6 md:text-[13px] lg:px-10 lg:text-[14px]",
                       active
                         ? "bg-white font-bold shadow-[0_2px_8px_rgba(0,23,90,0.18)]"
                         : "font-semibold text-white hover:bg-white/10",
@@ -82,7 +82,7 @@ export function LifecycleBar() {
                   >
                     {group.label}
                     {!active ? (
-                      <span className="absolute inset-x-8 bottom-0 h-px origin-center scale-x-0 bg-white/75 transition-transform duration-150 group-hover:scale-x-100" />
+                      <span className="absolute inset-x-3 bottom-0 h-px origin-center scale-x-0 bg-white/75 transition-transform duration-150 group-hover:scale-x-100 md:inset-x-8" />
                     ) : null}
                   </Link>
                 </li>

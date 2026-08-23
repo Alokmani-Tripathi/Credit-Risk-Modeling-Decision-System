@@ -38,7 +38,7 @@ function ShellFrame({ children }: { children: React.ReactNode }) {
           <LifecycleBar />
           <WorkspaceTabs />
         </div>
-        <main className="w-full flex-1 px-6 py-6 md:px-8 md:py-7">{children}</main>
+        <main className="w-full flex-1 px-4 py-5 sm:px-6 sm:py-6 md:px-8 md:py-7">{children}</main>
         <PlatformFooter />
       </div>
     </div>

@@ -24,7 +24,7 @@ export function MetricCard({
   return (
     <div className="panel-pad">
       <div className="label-caps">{label}</div>
-      <div className={cn("mt-2 text-2xl font-semibold tracking-tight mono-num", toneCls)}>{value}</div>
+      <div className={cn("mt-1.5 text-xl font-semibold tracking-tight mono-num sm:mt-2 sm:text-2xl", toneCls)}>{value}</div>
       {hint ? <div className="mt-1 text-xs text-mist-500">{hint}</div> : null}
     </div>
   );

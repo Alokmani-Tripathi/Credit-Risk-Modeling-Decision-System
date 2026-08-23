@@ -60,7 +60,7 @@ aside *::-webkit-scrollbar-track {
     @apply rounded-xl border border-mist-200 bg-white shadow-panel;
   }
   .panel-pad {
-    @apply panel p-5;
+    @apply panel p-4 sm:p-5;
   }
   .label-caps {
     @apply text-[11px] font-semibold uppercase tracking-[0.08em] text-mist-500;
@@ -79,5 +79,15 @@ aside *::-webkit-scrollbar-track {
   }
   .btn-secondary:hover {
     @apply border-signal bg-mist-100;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }

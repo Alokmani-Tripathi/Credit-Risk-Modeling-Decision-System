@@ -14,7 +14,7 @@ export function WorkspaceTabs() {
   return (
     <div className="border-b border-mist-200 bg-white">
       <nav
-        className="flex w-full gap-0 overflow-x-auto px-6 md:px-8"
+        className="flex w-full gap-0 overflow-x-auto px-4 scrollbar-none sm:px-6 md:px-8"
         aria-label={`${group.label} pages`}
       >
         {group.items.map((item) => {
